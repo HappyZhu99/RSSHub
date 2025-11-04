@@ -401,9 +401,6 @@
   "/ahjzu/news": [
     "Yuk-0v0"
   ],
-  "/aiaa/journal/:journalID": [
-    "HappyZhu99"
-  ],
   "/aibase/daily": [
     "3tuuu"
   ],
@@ -700,9 +697,6 @@
   ],
   "/azul/downloads": [
     "nczitzk"
-  ],
-  "/azurlane/news/:server/:type?": [
-    "AnitsuriW"
   ],
   "/baai/hub/events": [
     "TonyRL"
@@ -1731,9 +1725,7 @@
     "Derekmini",
     "pseudoyu"
   ],
-  "/cnljxh/news/:id?": [
-    "nczitzk"
-  ],
+  "/cnljxh/:category?/:id?": [],
   "/cntheory/paper/:id?": [
     "nczitzk"
   ],
@@ -1860,9 +1852,6 @@
   "/cqgas/tqtz": [
     "Mai19930513"
   ],
-  "/cqu/jwc/:path{.+}?": [
-    "AhsokaTano26"
-  ],
   "/cqwu/news/:type?": [
     "Fatpandac"
   ],
@@ -1936,9 +1925,6 @@
   ],
   "/ctbu/xxgg": [
     "Skylwn"
-  ],
-  "/ctinews/topic/:topic?": [
-    "TonyRL"
   ],
   "/cts/:category": [
     "miles170"
@@ -2149,9 +2135,6 @@
     "blade0910"
   ],
   "/dgjyw*": [],
-  "/dgtle/news/:id?": [
-    "nczitzk"
-  ],
   "/dgut/jwb/:type?": [
     "1200522928"
   ],
@@ -4594,9 +4577,6 @@
     "nczitzk"
   ],
   "/jjwxc/book/:id?": [
-    "nczitzk"
-  ],
-  "/jl1mall/forum/:type?/:key?": [
     "nczitzk"
   ],
   "/jlu/jwc": [
