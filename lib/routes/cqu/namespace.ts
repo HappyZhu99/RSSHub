@@ -1,7 +1,7 @@
 import type { Namespace } from '@/types';
 
 export const namespace: Namespace = {
-    name: 'mymusic5 (MyMusicSheet)',
-    url: 'mymusicfive.com',
-    lang: 'en',
+    name: '重庆大学',
+    url: 'cqu.edu.cn',
+    lang: 'zh-CN',
 };
