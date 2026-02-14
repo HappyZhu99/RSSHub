@@ -1,6 +1,7 @@
 import { Route } from '@/types';
 
 import cache from '@/utils/cache';
+import got from '@/utils/got';
 import ofetch from '@/utils/ofetch';
 import { load } from 'cheerio';
 import path from 'node:path';
@@ -22,18 +23,41 @@ export const route: Route = {
 
 async function handler(ctx) {
     const publicationNumber = ctx.req.param('punumber');
-    const earlyAccess = !!ctx.req.param('earlyAccess');
 
     const metadata = await fetchMetadata(publicationNumber);
     const { displayTitle, currentIssue, preprintIssue, coverImagePath } = metadata;
-    const { issueNumber, volume } = earlyAccess ? preprintIssue : currentIssue;
+    const { issueNumber, volume } = currentIssue;
+
+    const preIssueNumber = preprintIssue.issueNumber;
 
     const tocData = await fetchTOCData(publicationNumber, issueNumber);
-    const list = tocData.records.map((item) => {
+    const preTocData = await fetchTOCData(publicationNumber, preIssueNumber);
+
+    if (tocData.totalPages > 1) {
+        const tocPages = Array.from({ length: tocData.totalPages - 1 }, (_, index) => index + 2);
+        const tocResponses = await Promise.all(tocPages.map((pageNumber) => fetchTOCData(publicationNumber, issueNumber, pageNumber)));
+        tocData.records = tocData.records.concat(tocResponses.flatMap((response) => response.records));
+    }
+
+    if (preTocData.totalPages > 1) {
+        const prePages = Array.from({ length: preTocData.totalPages - 1 }, (_, index) => index + 2);
+        const preResponses = await Promise.all(prePages.map((pageNumber) => fetchTOCData(publicationNumber, preIssueNumber, pageNumber)));
+        preTocData.records = preTocData.records.concat(preResponses.flatMap((response) => response.records));
+    }
+
+    const cuList = tocData.records.map((item) => {
         const mappedItem = mapRecordToItem(volume)(item);
 
         return mappedItem;
     });
+
+    const preList = preTocData.records.map((item) => {
+        const mappedItem = mapRecordToItem('Preprint')(item);
+
+        return mappedItem;
+    });
+
+    const list = cuList.concat(preList);
 
     const items = await Promise.all(
         list.map((item) =>
@@ -70,9 +94,9 @@ async function fetchMetadata(punumber) {
     return response.data;
 }
 
-async function fetchTOCData(punumber, isnumber) {
+async function fetchTOCData(punumber, isnumber, pageNumber = 1) {
     const response = await got.post(`${ieeeHost}/rest/search/pub/${punumber}/issue/${isnumber}/toc`, {
-        json: { punumber, isnumber, rowsPerPage: '100' },
+        json: { punumber, isnumber, rowsPerPage: '100', pageNumber },
     });
     return response.data;
 }
