@@ -6,6 +6,7 @@ import ofetch from '@/utils/ofetch';
 import { load } from 'cheerio';
 import path from 'node:path';
 import { art } from '@/utils/render';
+import { parseDate } from '@/utils/parse-date';
 
 const ieeeHost = 'https://ieeexplore.ieee.org';
 
@@ -26,7 +27,7 @@ async function handler(ctx) {
 
     const metadata = await fetchMetadata(publicationNumber);
     const { displayTitle, currentIssue, preprintIssue, coverImagePath } = metadata;
-    const { issueNumber, volume } = currentIssue;
+    const { issueNumber, volume, issue, publicationDateAsStr } = currentIssue;
 
     const preIssueNumber = preprintIssue.issueNumber;
 
@@ -45,17 +46,9 @@ async function handler(ctx) {
         preTocData.records = preTocData.records.concat(preResponses.flatMap((response) => response.records));
     }
 
-    const cuList = tocData.records.map((item) => {
-        const mappedItem = mapRecordToItem(volume)(item);
+    const cuList = tocData.records.map((item) => mapRecordToItem(volume, issue, publicationDateAsStr)(item));
 
-        return mappedItem;
-    });
-
-    const preList = preTocData.records.map((item) => {
-        const mappedItem = mapRecordToItem('Preprint')(item);
-
-        return mappedItem;
-    });
+    const preList = preTocData.records.map((item) => mapRecordToItem('Preprint', 99, 'Preprint')(item));
 
     const list = cuList.concat(preList);
 
@@ -71,7 +64,9 @@ async function handler(ctx) {
 
                 // 捕获等号右侧的 JSON（最小匹配直到紧随的分号）
                 const m = code.match(/xplGlobal\.document\.metadata\s*=\s*(\{[\s\S]*?\})\s*;/);
-                item.abstract = m ? ((JSON.parse(m[1]) as { abstract?: string }).abstract ?? ' ') : ' ';
+                const metadata = m ? (JSON.parse(m[1]) as { abstract?: string; displayPublicationDate?: string }) : null;
+                item.abstract = metadata?.abstract ?? ' ';
+                item.pubDate = metadata?.displayPublicationDate ? parseDate(metadata.displayPublicationDate) : undefined;
                 item.description = art(path.join(__dirname, 'templates/description.art'), {
                     item,
                 });
@@ -101,7 +96,7 @@ async function fetchTOCData(punumber, isnumber, pageNumber = 1) {
     return response.data;
 }
 
-function mapRecordToItem(volume) {
+function mapRecordToItem(volume, issue, publicationDateAsStr) {
     return (item) => ({
         abstract: item.abstract || '',
         authors: item.authors ? item.authors.map((author) => author.preferredName).join('; ') : '',
@@ -110,5 +105,7 @@ function mapRecordToItem(volume) {
         link: item.htmlLink,
         title: item.articleTitle || '',
         volume,
+        issue,
+        publicationDateAsStr,
     });
 }
