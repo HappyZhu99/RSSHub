@@ -4,7 +4,9 @@
 <p>
     <span><small><i>{{ item.authors }}</i></small></span><br>
     <span><small><i><a href="https://doi.org/{{ item.doi }}">https://doi.org/{{ item.doi }}</a></i></small></span><br>
-    <span><small><i>Volume {{ item.volume }}</i></small></span><br>
+    <span><small><i>Volume {{ item.volume }}, Issue {{ item.issue }}</i></small></span><br>
+    <span><small><i>Published Date: {{ item.pubDate }}</i></small></span><br>
+    <span><small><i>Issue Date: {{ item.publicationDateAsStr }}</i></small></span><br>
 </p>
 <p>
     <span>{{ item.abstract }}</span><br>
