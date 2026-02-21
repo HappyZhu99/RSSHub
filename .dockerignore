@@ -39,10 +39,7 @@ vitest.config.ts
 vercel.json
 
 # git but keep the git commit hash
-.git/logs
-.git/index
-.git/info
-.git/hooks
+.git
 
 # rsshub auxiliary files
 lib/routes/**/radar.js
