@@ -1,11 +1,11 @@
-import { Route } from '@/types';
+import { load } from 'cheerio';
+import sanitizeHtml from 'sanitize-html';
 
+import { config } from '@/config';
+import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
-import { load } from 'cheerio';
 import { parseDate } from '@/utils/parse-date';
-import sanitizeHtml from 'sanitize-html';
-import { config } from '@/config';
 
 export const route: Route = {
     path: '/journal/:id/mix',
@@ -100,7 +100,10 @@ async function handler(ctx) {
 
     return {
         title: `${titleMetadata.displayName} | ${currentIssue.volIssueSupplementText}, (${currentIssue.coverDateText}) | ScienceDirect.com by Elsevier`,
-        description: sanitizeHtml(titleMetadata.aimsAndScopeV2, { allowedTags: [], allowedAttributes: {} }),
+        description: sanitizeHtml(titleMetadata.aimsAndScopeV2, {
+            allowedTags: [],
+            allowedAttributes: {},
+        }),
         image: titleMetadata.largeCoverUrl ?? titleMetadata.smallCoverUrl,
         link: issueUrl,
         item: items,

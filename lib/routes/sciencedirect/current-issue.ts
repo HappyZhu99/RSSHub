@@ -38,6 +38,7 @@ async function handler(ctx) {
 
     const pageResponse = await ofetch(currentUrl, {
         headers: {
+            Host: 'www.sciencedirect.com',
             'User-Agent': config.trueUA,
         },
     });
@@ -47,7 +48,7 @@ async function handler(ctx) {
     const issueUrl = `${currentUrl}${pageData.latestIssues.issues[0].uriLookup}`;
     const issueResponse = await ofetch(issueUrl, {
         headers: {
-            'User-Agent': config.trueUA,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0',
         },
     });
     const $issue = load(issueResponse);
@@ -72,7 +73,7 @@ async function handler(ctx) {
             cache.tryGet(item.link, async () => {
                 const response = await ofetch(`https://www.sciencedirect.com/journal/0304405X/abstract?pii=${item.pii}`, {
                     headers: {
-                        'User-Agent': config.trueUA,
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0',
                     },
                 });
 
@@ -91,7 +92,10 @@ async function handler(ctx) {
 
     return {
         title: `${titleMetadata.displayName} | ${currentIssue.volIssueSupplementText}, (${currentIssue.coverDateText}) | ScienceDirect.com by Elsevier`,
-        description: sanitizeHtml(titleMetadata.aimsAndScopeV2, { allowedTags: [], allowedAttributes: {} }),
+        description: sanitizeHtml(titleMetadata.aimsAndScopeV2, {
+            allowedTags: [],
+            allowedAttributes: {},
+        }),
         image: titleMetadata.largeCoverUrl ?? titleMetadata.smallCoverUrl,
         link: issueUrl,
         item: items,
