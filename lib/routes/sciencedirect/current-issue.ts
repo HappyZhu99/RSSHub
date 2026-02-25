@@ -4,6 +4,7 @@ import sanitizeHtml from 'sanitize-html';
 import { config } from '@/config';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
+import { generateHeaders, PRESETS } from '@/utils/header-generator';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
@@ -13,9 +14,15 @@ export const route: Route = {
     example: '/sciencedirect/journal/journal-of-financial-economics/current',
     parameters: { id: 'Journal id, can be found in URL' },
     features: {
-        requireConfig: false,
+        requireConfig: [
+            {
+                name: 'SCIENCEDIRECT_COOKIE',
+                optional: true,
+                description: 'ScienceDirect Cookie, can be obtained from the browser after visiting sciencedirect.com',
+            },
+        ],
         requirePuppeteer: false,
-        antiCrawler: false,
+        antiCrawler: true,
         supportBT: false,
         supportPodcast: false,
         supportScihub: false,
@@ -36,21 +43,20 @@ async function handler(ctx) {
     const baseUrl = 'https://www.sciencedirect.com';
     const currentUrl = `${baseUrl}/journal/${id}`;
 
-    const pageResponse = await ofetch(currentUrl, {
+    const browserHeaders = generateHeaders(PRESETS.MODERN_WINDOWS_CHROME);
+    const requestConfig = {
         headers: {
-            Host: 'www.sciencedirect.com',
-            'User-Agent': config.trueUA,
+            ...browserHeaders,
+            ...(config.sciencedirect.cookie ? { cookie: config.sciencedirect.cookie } : {}),
         },
-    });
+    };
+
+    const pageResponse = await ofetch(currentUrl, requestConfig);
     const $page = load(pageResponse);
     const pageData = JSON.parse(JSON.parse($page('script[type="application/json"]').text()));
 
     const issueUrl = `${currentUrl}${pageData.latestIssues.issues[0].uriLookup}`;
-    const issueResponse = await ofetch(issueUrl, {
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0',
-        },
-    });
+    const issueResponse = await ofetch(issueUrl, requestConfig);
     const $issue = load(issueResponse);
 
     const issueData = JSON.parse(JSON.parse($issue('script[type="application/json"]').text()));
@@ -71,11 +77,7 @@ async function handler(ctx) {
     const items = await Promise.all(
         list.map((item) =>
             cache.tryGet(item.link, async () => {
-                const response = await ofetch(`https://www.sciencedirect.com/journal/0304405X/abstract?pii=${item.pii}`, {
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0',
-                    },
-                });
+                const response = await ofetch(`https://www.sciencedirect.com/journal/0304405X/abstract?pii=${item.pii}`, requestConfig);
 
                 const abstracts = response.data?.[0]?.abstracts ?? [];
                 item.description =

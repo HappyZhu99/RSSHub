@@ -19,6 +19,7 @@ test
 .eslint*
 .gitignore
 .markdownlint.jsonc
+.prettierrc
 .(yarn|npm|nvm)rc
 *.md
 *.nix

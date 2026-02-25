@@ -16,6 +16,8 @@
 .yarnrc.yml
 .pnp*
 
+.prettierrc
+
 *.swp
 *.iml
 

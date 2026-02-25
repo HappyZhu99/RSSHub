@@ -182,6 +182,7 @@ type ConfigEnvKeys =
     | 'SEHUATANG_COOKIE'
     | 'SCBOY_BBS_TOKEN'
     | 'SCIHUB_HOST'
+    | 'SCIENCEDIRECT_COOKIE'
     | 'SDO_FF14RISINGSTONES'
     | 'SDO_UA'
     | 'SIS001_BASE_URL'
@@ -575,6 +576,9 @@ export type Config = {
     };
     scihub: {
         host?: string;
+    };
+    sciencedirect: {
+        cookie?: string;
     };
     sdo: {
         ff14risingstones?: string;
@@ -1064,6 +1068,9 @@ const calculateValue = () => {
         },
         scihub: {
             host: envs.SCIHUB_HOST || 'https://sci-hub.se/',
+        },
+        sciencedirect: {
+            cookie: envs.SCIENCEDIRECT_COOKIE,
         },
         sdo: {
             ff14risingstones: envs.SDO_FF14RISINGSTONES,
