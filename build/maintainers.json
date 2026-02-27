@@ -877,6 +877,9 @@
   "/bestblogs/feeds/:category?": [
     "zhenlohuang"
   ],
+  "/bestblogs/newsletter": [
+    "occam-7"
+  ],
   "/bestofjs/rankings/monthly": [
     "ztkuaikuai"
   ],
@@ -1869,6 +1872,12 @@
   "/collabo-cafe/tag/:tag": [
     "cokemine"
   ],
+  "/comic-fuz/magazine/:id": [
+    "xiaobailoves"
+  ],
+  "/comic-fuz/manga/:id": [
+    "xiaobailoves"
+  ],
   "/comicat/search/:keyword": [
     "Cyang39"
   ],
@@ -2510,6 +2519,9 @@
   ],
   "/douban/people/:userid/wish/:routeParams?": [
     "exherb"
+  ],
+  "/douban/tv/coming/:sortBy?/:count?": [
+    "honue"
   ],
   "/douyin/hashtag/:cid/:routeParams?": [
     "TonyRL"
@@ -5219,6 +5231,9 @@
   ],
   "/lens/profile/:handle": [
     "DIYgod"
+  ],
+  "/lephoceen/chrono": [
+    "Loopy03"
   ],
   "/letterboxd/:username/watchlist": [
     "johan456789"
